@@ -1,73 +1,180 @@
-# React + TypeScript + Vite
+# Stroop-тест: Интерактивное приложение для оценки когнитивного контроля
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Проект представляет собой веб-приложение для проведения психологического теста Струпа (Stroop test), который измеряет способность подавлять автоматические реакции (интерференцию) и оценивает когнитивный контроль.
 
-Currently, two official plugins are available:
+## Описание пользовательского интерфейса
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Стимул**: в центре экрана отображается слово, обозначающее цвет (например, "КРАСНЫЙ", "СИНИЙ", "ЗЕЛЁНЫЙ", "ЖЁЛТЫЙ"), написанное цветным шрифтом.
+- **Панель выбора**: ниже слова расположены четыре кнопки с названиями цветов (или цветные кнопки).
+- **Таймер**: отображается время, прошедшее с начала сессии, либо оставшееся время (при ограничении по времени).
+- **Индикаторы**: показывают количество выполненных стимулов, количество ошибок, текущий уровень сложности.
 
-## React Compiler
+### Действия пользователя
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Пользователь должен **выбрать цвет шрифта**, игнорируя семантическое значение слова. Например, если слово "КРАСНЫЙ" написано синим цветом, правильный ответ — синий.
 
-## Expanding the ESLint configuration
+## Обязательные требования
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Минимум 30 стимулов за одну сессию** — каждый тест включает не менее 30 предъявлений.
+2. **Случайная генерация конгруэнтных и неконгруэнтных стимулов**:
+   - Конгруэнтные: цвет слова совпадает с его значением (например, "КРАСНЫЙ" красным цветом).
+   - Неконгруэнтные: цвет слова не совпадает с его значением (например, "КРАСНЫЙ" синим цветом).
+   - Соотношение конгруэнтных/неконгруэнтных определяется случайно, но гарантирует репрезентативность.
+3. **Подсчёт метрик**:
+   - Среднее время реакции (по всем правильным ответам).
+   - Количество ошибок (неправильных выборов).
+   - Индекс интерференции: разница между средним временем реакции на неконгруэнтные и конгруэнтные стимулы.
+4. **Экран итогового отчёта** — после завершения сессии пользователь видит сводку с вычисленными показателями.
+5. **Покрытие тестами** — модульные тесты для генерации стимулов и расчёта итоговых показателей.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Дополнительный функционал
+** Уровни сложности
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Сложность возрастает за счёт введения ограничения времени и увеличения доли неконгруэнтных стимулов.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. **Лёгкий уровень**:
+   - Случайная генерация конгруэнтных и неконгруэнтных стимулов.
+   - Ограничения по времени нет.
+   - Цель — привыкнуть к задаче.
+
+2. **Средний уровень**:
+   - Случайная генерация конгруэнтных и неконгруэнтных стимулов.
+   - Добавляется ограничение времени на ответ — 3 секунды.
+   - Если пользователь не успевает ответить, фиксируется ошибка и происходит переход к следующему стимулу.
+
+3. **Сложный уровень**:
+   - Только неконгруэнтные стимулы (100%).
+   - Сохраняется ограничение времени 3 секунды.
+   - Это самый трудный уровень, так как все стимулы требуют подавления автоматической реакции чтения слова.
+
+- **Визуализация распределения времени реакции** — гистограмма или график, показывающий, как варьировалось время ответа в течение сессии.
+- **Ограничение по времени выполнения** — режим, в котором пользователь должен дать как можно больше правильных ответов за фиксированное время (например, 60 секунд).
+- **История результатов** — сохранение предыдущих попыток и сравнение прогресса.
+
+## Технологический стек
+
+- **Frontend**: React 18 с TypeScript
+- **Сборка**: Vite
+- **Стилизация**: CSS Modules / Tailwind CSS (опционально)
+- **Тестирование**: Vitest + React Testing Library
+- **Хранение состояния**: Zustand (или React Context)
+- **Визуализация**: Recharts / D3 (для графиков)
+- **Деплой**: Vercel / Netlify
+
+## Структура проекта
+
+```
+src/
+├── assets/          # Статические ресурсы (иконки, изображения)
+├── components/      # React-компоненты
+│   ├── Stimulus/   # Компонент отображения стимула
+│   ├── ButtonPanel/ # Панель кнопок выбора цвета
+│   ├── Timer/      # Таймер
+│   ├── Results/    # Экран результатов
+│   └── Stats/      # Блок статистики
+├── hooks/           # Пользовательские хуки
+│   ├── useStimulusGenerator.ts
+│   ├── useTimer.ts
+│   └── useMetrics.ts
+├── store/           # Состояние (Zustand)
+│   └── stroopStore.ts
+├── utils/           # Вспомогательные функции
+│   ├── stimulus.ts  # Генерация стимулов
+│   ├── metrics.ts   # Расчёт метрик
+│   └── constants.ts # Константы (цвета, слова)
+├── tests/           # Тесты
+│   ├── stimulus.test.ts
+│   ├── metrics.test.ts
+│   └── components/
+└── App.tsx          # Корневой компонент
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Логика работы
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Генерация стимулов
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Функция `generateStimulus()` создаёт объект стимула:
+
+```typescript
+interface Stimulus {
+  word: string;           // Текстовое значение ("КРАСНЫЙ")
+  color: string;          // Цвет шрифта (CSS color)
+  isCongruent: boolean;   // Конгруэнтность
+}
 ```
+
+Алгоритм:
+1. Выбирает случайное слово из набора цветов.
+2. Выбирает случайный цвет из того же набора.
+3. Определяет конгруэнтность (word === color).
+4. При необходимости регулирует вероятность конгруэнтных/неконгруэнтных в зависимости от уровня сложности.
+
+### Управление сессией
+
+1. **Инициализация**: пользователь выбирает уровень сложности и нажимает "Начать".
+2. **Цикл стимулов**:
+   - Показывается стимул, запускается таймер реакции.
+   - Пользователь нажимает кнопку цвета.
+   - Фиксируется время реакции и правильность.
+   - Стимул удаляется, через короткую паузу (например, 500 мс) показывается следующий.
+3. **Завершение**: после 30 стимулов (или по истечении времени) сессия останавливается, вычисляются метрики.
+
+### Расчёт метрик
+
+- **Среднее время реакции (СВР)**: сумма времени правильных ответов / количество правильных.
+- **Количество ошибок**: стимулы, на которые дан неправильный ответ.
+- **Индекс интерференции**: `СВР_неконгруэнтные - СВР_конгруэнтные`.
+
+## Тестирование
+
+Проект включает модульные и интеграционные тесты:
+
+- **Генерация стимулов**: проверка, что создаются корректные конгруэнтные и неконгруэнтные стимулы, соблюдается распределение.
+- **Расчёт метрик**: проверка формул на искусственных данных.
+- **Компоненты**: тестирование рендеринга и пользовательских взаимодействий с помощью React Testing Library.
+
+Пример теста:
+
+```typescript
+import { generateStimulus } from '../utils/stimulus';
+
+describe('stimulus generator', () => {
+  it('should create congruent stimulus when word and color match', () => {
+    const stimulus = generateStimulus('КРАСНЫЙ', 'КРАСНЫЙ');
+    expect(stimulus.isCongruent).toBe(true);
+  });
+});
+```
+
+## Запуск проекта
+
+1. Клонировать репозиторий:
+   ```bash
+   git clone <repo-url>
+   cd stroop-test
+   ```
+2. Установить зависимости:
+   ```bash
+   npm install
+   ```
+3. Запустить в режиме разработки:
+   ```bash
+   npm run dev
+   ```
+4. Открыть браузер по адресу `http://localhost:5173`.
+
+Для сборки продакшн-версии:
+```bash
+npm run build
+```
+
+## Планы по развитию
+
+- Добавление мультиплеера (соревнование двух игроков).
+- Экспорт результатов в CSV/PDF.
+- Адаптация для мобильных устройств (PWA).
+- Интеграция с бэкендом для хранения истории тестов и аналитики.
+
+## Лицензия
+
+MIT
