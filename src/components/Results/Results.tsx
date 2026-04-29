@@ -1,6 +1,6 @@
 import { useStroop } from '../../context/StroopContext';
 import { DIFFICULTY_CONFIGS } from '../../utils/constants';
-import { formatTime } from '../../utils/helpers';
+// import { formatTime } from '../../utils/helpers';
 import styles from './Results.module.css';
 
 export function Results() {
@@ -30,6 +30,13 @@ export function Results() {
     // (это произойдет автоматически, т.к. статус станет 'idle')
   };
 
+  // Форматирование секунд в MM:SS (как в таймере)
+  const formatSeconds = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -37,7 +44,7 @@ export function Results() {
         <p className={styles.subtitle}>
           Уровень сложности: <strong>{config.name}</strong>
           <br />
-          Общее время: <strong>{formatTime(elapsedTime)}</strong>
+          Общее время: <strong>{formatSeconds(elapsedTime)}</strong>
         </p>
       </div>
 
@@ -53,9 +60,9 @@ export function Results() {
 
         <div className={`${styles.metricCard} ${styles.reaction}`}>
           <div className={styles.metricIcon}>⏱️</div>
-          <div className={styles.metricValue}>{metrics.averageReactionTime} мс</div>
-          <div className={styles.metricLabel}>Среднее время реакции</div>
-          <div className={styles.metricSub}></div>
+          <div className={styles.metricValue}>{formatSeconds(elapsedTime)}</div>
+          <div className={styles.metricLabel}>Затраченное время</div>
+          <div className={styles.metricSub}>Общая длительность теста</div>
         </div>
       </div>
 

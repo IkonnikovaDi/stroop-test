@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useStroop } from '../../context/StroopContext';
 import { useReactionTimer } from '../../hooks/useTimer';
-import { COLOR_NAMES, COLOR_HEX, DIFFICULTY_CONFIGS } from '../../utils/constants';
+import { COLOR_NAMES, COLOR_HEX, DIFFICULTY_CONFIGS, MAX_REACTION_TIME, MIN_REACTION_TIME } from '../../utils/constants';
 import type { Color } from '../../types';
 import styles from './ButtonPanel.module.css';
 
@@ -41,7 +41,20 @@ export function ButtonPanel() {
   const handleColorClick = (color: Color) => {
     if (isProcessing) return;
 
-    const reactionTime = stopMeasurement(); // ← реальное время реакции!
+    let reactionTime = stopMeasurement(); // ← реальное время реакции!
+    
+    // Гарантируем, что reactionTime является числом
+    if (reactionTime === null) {
+      console.warn('reactionTime is null, using fallback value');
+      reactionTime = MAX_REACTION_TIME; // используем максимальное допустимое время
+    }
+
+    // Ограничиваем время реакции разумными пределами
+    if (reactionTime < MIN_REACTION_TIME) {
+      reactionTime = MIN_REACTION_TIME;
+    } else if (reactionTime > MAX_REACTION_TIME) {
+      reactionTime = MAX_REACTION_TIME;
+    }
 
     setIsProcessing(true);
     setSelectedColor(color);

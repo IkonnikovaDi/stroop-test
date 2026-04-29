@@ -19,23 +19,21 @@ export function calculateMetrics(answers: Answer[], stimuli: Stimulus[]): Metric
   // Сопоставляем ответы со стимулами для получения конгруэнтности
   const stimulusMap = new Map(stimuli.map(s => [s.id, s]));
 
-  const validAnswers = answers.filter(a => {
-    const stimulus = stimulusMap.get(a.stimulusId);
-    if (!stimulus) return false;
-    // Фильтруем ответы с некорректным временем реакции
-    return a.reactionTime >= MIN_REACTION_TIME && a.reactionTime <= MAX_REACTION_TIME;
-  });
+  // Ответы, для которых существует стимул (все)
+  const answersWithStimulus = answers.filter(a => stimulusMap.has(a.stimulusId));
+  
+  // Валидные ответы (с корректным временем реакции)
+  const validAnswers = answersWithStimulus.filter(a =>
+    a.reactionTime >= MIN_REACTION_TIME && a.reactionTime <= MAX_REACTION_TIME
+  );
 
-  if (validAnswers.length === 0) {
-    return getEmptyMetrics();
-  }
-
-  const totalStimuli = validAnswers.length;
-  const correctAnswers = validAnswers.filter(a => a.isCorrect).length;
+  // Рассчитываем точность по всем ответам, для которых есть стимул
+  const totalStimuli = answersWithStimulus.length;
+  const correctAnswers = answersWithStimulus.filter(a => a.isCorrect).length;
   const incorrectAnswers = totalStimuli - correctAnswers;
-  const accuracy = (correctAnswers / totalStimuli) * 100;
+  const accuracy = totalStimuli > 0 ? (correctAnswers / totalStimuli) * 100 : 0;
 
-  // Среднее время реакции для правильных ответов
+  // Среднее время реакции для правильных ответов (только валидные)
   const correctReactionTimes = validAnswers
     .filter(a => a.isCorrect)
     .map(a => a.reactionTime);
@@ -43,7 +41,7 @@ export function calculateMetrics(answers: Answer[], stimuli: Stimulus[]): Metric
     ? correctReactionTimes.reduce((sum, rt) => sum + rt, 0) / correctReactionTimes.length
     : 0;
 
-  // Разделение на конгруэнтные и неконгруэнтные
+  // Разделение на конгруэнтные и неконгруэнтные (только валидные)
   const congruentAnswers: Answer[] = [];
   const incongruentAnswers: Answer[] = [];
 
@@ -78,11 +76,6 @@ export function calculateMetrics(answers: Answer[], stimuli: Stimulus[]): Metric
   const interferenceIndex = incongruentAvgTime - congruentAvgTime;
 
   // Скорость ответов (стимулов в минуту)
-  // Для вычисления нужна длительность сессии, но её нет в ответах.
-  // Вместо этого используем среднее время реакции и общее время.
-  // Приблизительно: скорость = (общее количество стимулов) / (общее время в минутах)
-  // Общее время = сумма времен реакции + паузы между стимулами (неизвестно).
-  // Упростим: скорость = 60 / (среднее время реакции в секундах)
   const avgReactionTimeSeconds = averageReactionTime / 1000;
   const speed = avgReactionTimeSeconds > 0 ? 60 / avgReactionTimeSeconds : 0;
 
