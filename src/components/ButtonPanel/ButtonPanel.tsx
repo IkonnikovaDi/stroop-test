@@ -40,6 +40,7 @@ export function ButtonPanel() {
     setSelectedColor(color);
 
     const reactionTime = 0; // TODO: заменить на реальное время реакции (из хука useTimer)
+    // eslint-disable-next-line react-hooks/purity
     const timestamp = Date.now();
 
     // Диспатч записи ответа
