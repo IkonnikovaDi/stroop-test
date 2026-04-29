@@ -1,5 +1,4 @@
 import { useStroop } from '../../context/StroopContext';
-import { useTimer } from '../../hooks/useTimer';
 import { DIFFICULTY_CONFIGS } from '../../utils/constants';
 import styles from './Timer.module.css';
 
@@ -10,32 +9,13 @@ export function Timer() {
   const config = DIFFICULTY_CONFIGS[difficulty];
   const timeLimit = config.timeLimit; // в секундах
 
-  // Хук useTimer для синхронизации с состоянием
-  const { time, start, pause, reset } = useTimer({
-    initialTime: elapsedTime,
-    autoStart: status === 'running',
-    interval: 100,
-    timeLimit: timeLimit,
-    onTimeLimit: () => {
-      // При достижении лимита автоматически завершаем тест
-      dispatch({ type: 'COMPLETE_TEST' });
-    },
-  });
-
-  // Синхронизация с состоянием приложения
-  // (в реальном приложении нужно обновлять elapsedTime в контексте)
-  // Для простоты пока просто отображаем time
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    const ms = Math.floor((seconds % 1) * 100);
-    return `${mins.toString().padStart(2, '0')}:${secs
-      .toString()
-      .padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const progress = timeLimit ? (time / timeLimit) * 100 : 0;
+  const progress = timeLimit ? (elapsedTime / timeLimit) * 100 : 0;
 
   return (
     <div className={styles.container}>
@@ -53,7 +33,7 @@ export function Timer() {
       </div>
 
       <div className={styles.timeDisplay}>
-        <div className={styles.time}>{formatTime(time)}</div>
+        <div className={styles.time}>{formatTime(elapsedTime)}</div>
         <div className={styles.timeLabel}>Прошедшее время</div>
       </div>
 
@@ -76,7 +56,6 @@ export function Timer() {
           <button
             className={styles.controlButton}
             onClick={() => {
-              pause();
               dispatch({ type: 'PAUSE_TEST' });
             }}
           >
@@ -87,7 +66,6 @@ export function Timer() {
           <button
             className={styles.controlButton}
             onClick={() => {
-              start();
               dispatch({ type: 'RESUME_TEST' });
             }}
           >
@@ -97,7 +75,6 @@ export function Timer() {
         <button
           className={styles.controlButton}
           onClick={() => {
-            reset();
             dispatch({ type: 'RESET_TEST' });
           }}
         >

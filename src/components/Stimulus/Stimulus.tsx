@@ -61,12 +61,6 @@ export function Stimulus({
       >
         {wordText}
       </div>
-      <div className={styles.hint}>
-        Выберите <strong>цвет шрифта</strong>, а не значение слова
-      </div>
-      <div className={styles.colorInfo}>
-        Текущий цвет: <span style={{ color: colorHex }}>{COLOR_NAMES[color]}</span>
-      </div>
     </div>
   );
 }

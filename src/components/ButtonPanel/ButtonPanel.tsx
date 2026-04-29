@@ -1,28 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useStroop } from '../../context/StroopContext';
-import { COLOR_NAMES, COLOR_HEX } from '../../utils/constants';
+import { useReactionTimer } from '../../hooks/useTimer';
+import { COLOR_NAMES, COLOR_HEX, DIFFICULTY_CONFIGS } from '../../utils/constants';
 import type { Color } from '../../types';
 import styles from './ButtonPanel.module.css';
 
 export function ButtonPanel() {
   const { state, dispatch } = useStroop();
+  const { startMeasurement, stopMeasurement, resetMeasurement } = useReactionTimer();
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Получаем доступные цвета для текущего уровня сложности
-  const availableColors: Color[] =
-    state.difficulty === 'easy'
-      ? ['red', 'green', 'blue', 'yellow']
-      : state.difficulty === 'medium'
-      ? ['red', 'green', 'blue', 'yellow', 'purple']
-      : ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+  // Доступные цвета из конфига (а не хардкод)
+  const availableColors = DIFFICULTY_CONFIGS[state.difficulty].colors;
 
   const currentStimulus = state.currentStimulus;
 
+  // Запуск таймера при новом стимуле
   useEffect(() => {
-    // Сброс выбора при смене стимула
+    if (currentStimulus && !isProcessing) {
+      startMeasurement();
+    }
+  }, [currentStimulus?.id]);
+
+  // Сброс при смене стимула
+  useEffect(() => {
     setSelectedColor(null);
     setIsProcessing(false);
+    resetMeasurement();
   }, [currentStimulus?.id]);
 
   if (!currentStimulus) {
@@ -36,45 +41,30 @@ export function ButtonPanel() {
   const handleColorClick = (color: Color) => {
     if (isProcessing) return;
 
+    const reactionTime = stopMeasurement(); // ← реальное время реакции!
+
     setIsProcessing(true);
     setSelectedColor(color);
 
-    const reactionTime = 0; // TODO: заменить на реальное время реакции (из хука useTimer)
-    // eslint-disable-next-line react-hooks/purity
-    const timestamp = Date.now();
-
-    // Диспатч записи ответа
     dispatch({
       type: 'RECORD_ANSWER',
       payload: {
         stimulusId: currentStimulus.id,
         selectedColor: color,
         reactionTime,
-        timestamp,
+        timestamp: Date.now(),
       },
     });
 
-    // Задержка перед следующим стимулом для визуальной обратной связи
     setTimeout(() => {
       dispatch({ type: 'NEXT_STIMULUS' });
     }, 500);
   };
 
-  const isCorrect = (color: Color) =>
-    color === currentStimulus.color;
+  const isCorrect = (color: Color) => color === currentStimulus.color;
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.title}>Выберите цвет шрифта</h3>
-      <p className={styles.subtitle}>
-        Текущий стимул: <strong>{COLOR_NAMES[currentStimulus.word]}</strong>
-        <br />
-        Конгруэнтность:{' '}
-        <span className={currentStimulus.congruent ? styles.congruent : styles.incongruent}>
-          {currentStimulus.congruent ? 'конгруэнтный' : 'неконгруэнтный'}
-        </span>
-      </p>
-
       <div className={styles.buttons}>
         {availableColors.map((color) => {
           const hex = COLOR_HEX[color];
@@ -100,7 +90,6 @@ export function ButtonPanel() {
               aria-label={`Выбрать ${COLOR_NAMES[color]}`}
             >
               <span className={styles.colorName}>{COLOR_NAMES[color]}</span>
-              <span className={styles.hex}>{hex}</span>
             </button>
           );
         })}
@@ -115,10 +104,6 @@ export function ButtonPanel() {
         {isProcessing && <p className={styles.processing}>Загрузка следующего стимула...</p>}
       </div>
 
-      <div className={styles.stats}>
-        <span>Ответов: {state.answers.length}</span>
-        <span>Осталось: {state.stimuli.length - state.answers.length}</span>
-      </div>
     </div>
   );
 }

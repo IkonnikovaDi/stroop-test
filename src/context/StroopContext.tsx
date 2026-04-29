@@ -57,9 +57,11 @@ function stroopReducer(state: StroopState, action: Action): StroopState {
         timestamp,
       };
       const newAnswers = [...state.answers, newAnswer];
+      const newMetrics = calculateMetrics(newAnswers, state.stimuli);
       return {
         ...state,
         answers: newAnswers,
+        metrics: newMetrics,
       };
     }
     case 'NEXT_STIMULUS': {

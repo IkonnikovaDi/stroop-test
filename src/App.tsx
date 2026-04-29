@@ -6,11 +6,45 @@ import { Timer } from './components/Timer/Timer';
 import { Stats } from './components/Stats/Stats';
 import { Results } from './components/Results/Results';
 import { useStroop } from './context/StroopContext';
+import { useEffect, useRef } from 'react';
 import './App.css';
 
 function StroopApp() {
   const { state, dispatch } = useStroop();
-  const { status, currentStimulus, difficulty } = state;
+  const { status, currentStimulus, difficulty, startTime } = state;
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Эффект для обновления прошедшего времени
+  useEffect(() => {
+    if (status === 'running' && startTime) {
+      // Очищаем предыдущий интервал, если он есть
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      // Запускаем интервал обновления каждые 100 мс
+      intervalRef.current = setInterval(() => {
+        const elapsedTime = (Date.now() - startTime) / 1000; // в секундах
+        dispatch({
+          type: 'UPDATE_ELAPSED_TIME',
+          payload: { elapsedTime },
+        });
+      }, 100);
+    } else {
+      // Останавливаем интервал, если тест не запущен
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    // Очистка интервала при размонтировании
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [status, startTime, dispatch]);
 
   const handlePause = () => {
     dispatch({ type: 'PAUSE_TEST' });

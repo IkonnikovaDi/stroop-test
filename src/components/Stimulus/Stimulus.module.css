@@ -12,7 +12,7 @@
   font-size: 5rem;
   font-weight: 900;
   text-align: center;
-  margin: 1rem 0;
+  margin: 0;
   opacity: 0;
   transform: scale(0.8);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -31,37 +31,10 @@
   transform: scale(0.95);
 }
 
-.hint {
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  margin-top: 2rem;
-  text-align: center;
-  max-width: 600px;
-  line-height: 1.5;
-}
-
-.colorInfo {
-  font-size: 1rem;
-  color: #555;
-  margin-top: 1rem;
-  background: #f1f1f1;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-}
-
-.colorInfo span {
-  font-weight: bold;
-}
-
 /* Адаптивность */
 @media (max-width: 768px) {
   .stimulus {
     font-size: 3.5rem;
-  }
-
-  .hint {
-    font-size: 1rem;
-    margin-top: 1.5rem;
   }
 
   .container {
@@ -73,9 +46,5 @@
 @media (max-width: 480px) {
   .stimulus {
     font-size: 2.8rem;
-  }
-
-  .hint {
-    font-size: 0.9rem;
   }
 }
