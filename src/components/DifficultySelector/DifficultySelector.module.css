@@ -1,0 +1,175 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 350px;
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 6px solid;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card.easy {
+  border-color: #2ecc71;
+}
+
+.card.medium {
+  border-color: #f39c12;
+}
+
+.card.hard {
+  border-color: #e74c3c;
+}
+
+.cardTitle {
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.cardDescription {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.cardDetails {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  color: #555;
+}
+
+.cardDetails li {
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.cardDetails li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #3498db;
+  font-weight: bold;
+}
+
+.startButton {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  align-self: center;
+  width: 100%;
+  max-width: 200px;
+}
+
+.startButton:hover {
+  background: linear-gradient(135deg, #2980b9, #1c5a7a);
+  transform: scale(1.05);
+}
+
+.startButton:active {
+  transform: scale(0.98);
+}
+
+.instructions {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.instructions h3 {
+  color: #2c3e50;
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+.instructions ol {
+  padding-left: 1.5rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.instructions li {
+  margin-bottom: 0.8rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    max-width: 100%;
+  }
+}

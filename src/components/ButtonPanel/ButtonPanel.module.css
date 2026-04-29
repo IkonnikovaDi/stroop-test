@@ -1,0 +1,195 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.subtitle {
+  text-align: center;
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.congruent {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.incongruent {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.button {
+  flex: 1;
+  min-width: 140px;
+  max-width: 180px;
+  height: 120px;
+  border-radius: 16px;
+  border: 3px solid;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.button.correct {
+  border-color: #2ecc71 !important;
+  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.3);
+}
+
+.button.incorrect {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.3);
+}
+
+.colorName {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.hex {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-family: monospace;
+}
+
+.feedback {
+  text-align: center;
+  min-height: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.feedbackCorrect {
+  color: #27ae60;
+  font-size: 1.3rem;
+  font-weight: bold;
+  animation: pulse 0.5s;
+}
+
+.feedbackIncorrect {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  font-weight: bold;
+  animation: shake 0.5s;
+}
+
+.processing {
+  color: #3498db;
+  font-style: italic;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.stats span {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.noStimulus {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #95a5a6;
+  padding: 2rem;
+}
+
+/* Анимации */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .buttons {
+    gap: 1rem;
+  }
+
+  .button {
+    min-width: 120px;
+    height: 100px;
+    font-size: 1rem;
+  }
+
+  .colorName {
+    font-size: 1.1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .button {
+    max-width: 100%;
+    width: 100%;
+    height: 90px;
+  }
+}
