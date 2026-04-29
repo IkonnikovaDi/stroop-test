@@ -61,7 +61,7 @@ export type ActionType =
 
 export interface Action {
   type: ActionType;
-  payload?: any;
+  payload?: unknown;
 }
 
 export interface Session {

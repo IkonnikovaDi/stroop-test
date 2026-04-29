@@ -1,14 +1,16 @@
-import React, { createContext, useContext, useReducer } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useReducer } from 'react';
 import type { ReactNode, Dispatch } from 'react';
 import type {
   StroopState,
   Action,
-  Difficulty,
   Stimulus,
   Answer,
-  Metrics,
-  TestStatus,
+  // Metrics,
+  Color,
+  Difficulty,
 } from '../types';
+import { calculateMetrics } from '../utils/metrics';
 
 // Начальное состояние
 const initialState: StroopState = {
@@ -23,61 +25,12 @@ const initialState: StroopState = {
   elapsedTime: 0,
 };
 
-// Вспомогательная функция для расчёта метрик (временная, позже будет вынесена в utils)
-function calculateMetrics(
-  answers: Answer[],
-  stimuli: Stimulus[]
-): Metrics | null {
-  if (answers.length === 0) return null;
-
-  const correctAnswers = answers.filter((a) => a.isCorrect).length;
-  const totalStimuli = stimuli.length;
-  const accuracy = (correctAnswers / answers.length) * 100;
-  const averageReactionTime =
-    answers.reduce((sum, a) => sum + a.reactionTime, 0) / answers.length;
-
-  // Разделим ответы на конгруэнтные и неконгруэнтные
-  const congruentAnswers = answers.filter((a) => {
-    const stimulus = stimuli.find((s) => s.id === a.stimulusId);
-    return stimulus?.congruent;
-  });
-  const incongruentAnswers = answers.filter((a) => {
-    const stimulus = stimuli.find((s) => s.id === a.stimulusId);
-    return stimulus && !stimulus.congruent;
-  });
-
-  const congruentAvgTime =
-    congruentAnswers.length > 0
-      ? congruentAnswers.reduce((sum, a) => sum + a.reactionTime, 0) /
-        congruentAnswers.length
-      : 0;
-  const incongruentAvgTime =
-    incongruentAnswers.length > 0
-      ? incongruentAnswers.reduce((sum, a) => sum + a.reactionTime, 0) /
-        incongruentAnswers.length
-      : 0;
-
-  const interferenceIndex = incongruentAvgTime - congruentAvgTime;
-  const speed = answers.length > 0 ? (answers.length / (totalStimuli / 60)) : 0; // упрощённо
-
-  return {
-    totalStimuli,
-    correctAnswers,
-    incorrectAnswers: answers.length - correctAnswers,
-    accuracy,
-    averageReactionTime,
-    interferenceIndex,
-    speed,
-    congruentAvgTime,
-    incongruentAvgTime,
-  };
-}
-
 // Редьюсер
 function stroopReducer(state: StroopState, action: Action): StroopState {
   switch (action.type) {
     case 'INIT_TEST': {
-      const { difficulty, stimuli } = action.payload;
+      const payload = action.payload as { difficulty: Difficulty; stimuli: Stimulus[] };
+      const { difficulty, stimuli } = payload;
       return {
         ...state,
         status: 'running',
@@ -92,7 +45,8 @@ function stroopReducer(state: StroopState, action: Action): StroopState {
       };
     }
     case 'RECORD_ANSWER': {
-      const { stimulusId, selectedColor, reactionTime, timestamp } = action.payload;
+      const payload = action.payload as { stimulusId: string; selectedColor: Color; reactionTime: number; timestamp: number };
+      const { stimulusId, selectedColor, reactionTime, timestamp } = payload;
       const stimulus = state.stimuli.find((s) => s.id === stimulusId);
       const isCorrect = stimulus?.color === selectedColor;
       const newAnswer: Answer = {
@@ -147,8 +101,10 @@ function stroopReducer(state: StroopState, action: Action): StroopState {
       return { ...state, status: 'paused' };
     case 'RESUME_TEST':
       return { ...state, status: 'running' };
-    case 'UPDATE_ELAPSED_TIME':
-      return { ...state, elapsedTime: action.payload.elapsedTime };
+    case 'UPDATE_ELAPSED_TIME': {
+      const payload = action.payload as { elapsedTime: number };
+      return { ...state, elapsedTime: payload.elapsedTime };
+    }
     default:
       return state;
   }
