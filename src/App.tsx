@@ -3,7 +3,6 @@ import { DifficultySelector } from './components/DifficultySelector/DifficultySe
 import { Stimulus } from './components/Stimulus/Stimulus';
 import { ButtonPanel } from './components/ButtonPanel/ButtonPanel';
 import { Timer } from './components/Timer/Timer';
-import { Stats } from './components/Stats/Stats';
 import { Results } from './components/Results/Results';
 import { useStroop } from './context/StroopContext';
 import { useEffect, useRef } from 'react';
@@ -119,7 +118,6 @@ function StroopApp() {
             </div>
             <div className="session-right">
               <Timer />
-              <Stats />
             </div>
           </div>
         )}

@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useStroop } from '../../context/StroopContext';
-import { useReactionTimer } from '../../hooks/useTimer';
 import { COLOR_NAMES, COLOR_HEX, DIFFICULTY_CONFIGS, MAX_REACTION_TIME, MIN_REACTION_TIME } from '../../utils/constants';
 import type { Color } from '../../types';
 import styles from './ButtonPanel.module.css';
 
 export function ButtonPanel() {
   const { state, dispatch } = useStroop();
-  const { startMeasurement, stopMeasurement, resetMeasurement } = useReactionTimer();
+  const startTimeRef = useRef<number | null>(null);
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -15,6 +14,22 @@ export function ButtonPanel() {
   const availableColors = DIFFICULTY_CONFIGS[state.difficulty].colors;
 
   const currentStimulus = state.currentStimulus;
+
+  const startMeasurement = () => {
+    startTimeRef.current = Date.now();
+  };
+
+  const stopMeasurement = (): number | null => {
+    if (startTimeRef.current === null) return null;
+    const endTime = Date.now();
+    const rt = endTime - startTimeRef.current;
+    startTimeRef.current = null;
+    return rt;
+  };
+
+  const resetMeasurement = () => {
+    startTimeRef.current = null;
+  };
 
   // Запуск таймера при новом стимуле
   useEffect(() => {
