@@ -10,7 +10,7 @@ import './App.css';
 
 function StroopApp() {
   const { state, dispatch } = useStroop();
-  const { status, currentStimulus, startTime } = state;
+  const { status, currentStimulus, startTime, currentStimulusStartTime } = state;
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Эффект для обновления прошедшего времени
@@ -28,6 +28,14 @@ function StroopApp() {
           type: 'UPDATE_ELAPSED_TIME',
           payload: { elapsedTime },
         });
+        // Обновляем время текущего стимула
+        if (currentStimulusStartTime !== null) {
+          const currentStimulusTime = (Date.now() - currentStimulusStartTime) / 1000;
+          dispatch({
+            type: 'UPDATE_CURRENT_STIMULUS_TIME',
+            payload: currentStimulusTime,
+          });
+        }
       }, 100);
     } else {
       // Останавливаем интервал, если тест не запущен
@@ -43,7 +51,7 @@ function StroopApp() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [status, startTime, dispatch]);
+  }, [status, startTime, dispatch, currentStimulusStartTime]);
 
   return (
     <div className="app">

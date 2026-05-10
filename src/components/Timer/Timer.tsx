@@ -4,7 +4,7 @@ import styles from './Timer.module.css';
 
 export function Timer() {
   const { state, dispatch } = useStroop();
-  const { status, difficulty, elapsedTime } = state;
+  const { status, difficulty, elapsedTime, currentStimulusTime } = state;
 
   const config = DIFFICULTY_CONFIGS[difficulty];
   const timeLimit = config.timeLimit; // в секундах
@@ -15,7 +15,7 @@ export function Timer() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const progress = timeLimit ? (elapsedTime / timeLimit) * 100 : 0;
+  const progress = timeLimit ? (currentStimulusTime / timeLimit) * 100 : 0;
 
   return (
     <div className={styles.container}>
@@ -40,7 +40,7 @@ export function Timer() {
       {timeLimit && (
         <div className={styles.progressContainer}>
           <div className={styles.progressLabel}>
-            Лимит: {timeLimit} сек ({Math.round(progress)}%)
+            Лимит: {timeLimit} сек   {/* ← убрали проценты */}
           </div>
           <div className={styles.progressBar}>
             <div

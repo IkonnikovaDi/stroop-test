@@ -23,6 +23,8 @@ const initialState: StroopState = {
   startTime: null,
   endTime: null,
   elapsedTime: 0,
+  currentStimulusStartTime: null,
+  currentStimulusTime: 0,
 };
 
 // Редьюсер
@@ -42,6 +44,8 @@ function stroopReducer(state: StroopState, action: Action): StroopState {
         answers: [],
         metrics: null,
         endTime: null,
+        currentStimulusStartTime: Date.now(),
+        currentStimulusTime: 0,
       };
     }
     case 'RECORD_ANSWER': {
@@ -80,12 +84,16 @@ function stroopReducer(state: StroopState, action: Action): StroopState {
           currentStimulus: null,
           endTime: Date.now(),
           metrics,
+          currentStimulusStartTime: null,
+          currentStimulusTime: 0,
         };
       }
       return {
         ...state,
         currentStimulus: nextStimulus,
         status: newStatus,
+        currentStimulusStartTime: Date.now(),
+        currentStimulusTime: 0,
       };
     }
     case 'COMPLETE_TEST': {
@@ -106,6 +114,10 @@ function stroopReducer(state: StroopState, action: Action): StroopState {
     case 'UPDATE_ELAPSED_TIME': {
       const payload = action.payload as { elapsedTime: number };
       return { ...state, elapsedTime: payload.elapsedTime };
+    }
+    case 'UPDATE_CURRENT_STIMULUS_TIME': {
+      const payload = action.payload as number; // время в секундах
+      return { ...state, currentStimulusTime: payload };
     }
     default:
       return state;

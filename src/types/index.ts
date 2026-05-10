@@ -47,6 +47,8 @@ export interface StroopState {
   startTime: number | null;
   endTime: number | null;
   elapsedTime: number; // прошедшее время в секундах
+  currentStimulusStartTime: number | null; // время начала текущего стимула (мс)
+  currentStimulusTime: number; // прошедшее время текущего стимула в секундах
 }
 
 export type ActionType =
@@ -57,7 +59,8 @@ export type ActionType =
   | 'RESET_TEST'
   | 'PAUSE_TEST'
   | 'RESUME_TEST'
-  | 'UPDATE_ELAPSED_TIME';
+  | 'UPDATE_ELAPSED_TIME'
+  | 'UPDATE_CURRENT_STIMULUS_TIME';
 
 export interface Action {
   type: ActionType;
