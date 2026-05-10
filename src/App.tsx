@@ -10,7 +10,7 @@ import './App.css';
 
 function StroopApp() {
   const { state, dispatch } = useStroop();
-  const { status, currentStimulus, difficulty, startTime } = state;
+  const { status, currentStimulus, startTime } = state;
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Эффект для обновления прошедшего времени
@@ -45,27 +45,10 @@ function StroopApp() {
     };
   }, [status, startTime, dispatch]);
 
-  const handlePause = () => {
-    dispatch({ type: 'PAUSE_TEST' });
-  };
-
-  const handleResume = () => {
-    dispatch({ type: 'RESUME_TEST' });
-  };
-
-  const handleComplete = () => {
-    dispatch({ type: 'COMPLETE_TEST' });
-  };
-
-  const handleReset = () => {
-    dispatch({ type: 'RESET_TEST' });
-  };
-
   return (
     <div className="app">
       <header className="app-header">
         <h1>Stroop-тест</h1>
-        <p>Оцените свой когнитивный контроль</p>
       </header>
 
       <main className="app-main">
@@ -91,30 +74,6 @@ function StroopApp() {
                 </div>
               )}
               <ButtonPanel />
-              <div className="session-controls">
-                <h3>Управление тестом</h3>
-                <div className="control-buttons">
-                  {status === 'running' && (
-                    <button className="control-button pause" onClick={handlePause}>
-                      ⏸️ Пауза
-                    </button>
-                  )}
-                  {status === 'paused' && (
-                    <button className="control-button resume" onClick={handleResume}>
-                      ▶️ Продолжить
-                    </button>
-                  )}
-                  <button className="control-button complete" onClick={handleComplete}>
-                    ✅ Завершить досрочно
-                  </button>
-                  <button className="control-button reset" onClick={handleReset}>
-                    🔄 Сбросить тест
-                  </button>
-                </div>
-                <p className="control-hint">
-                  Уровень сложности: <strong>{difficulty}</strong>. Вы можете приостановить тест в любой момент.
-                </p>
-              </div>
             </div>
             <div className="session-right">
               <Timer />
@@ -128,20 +87,6 @@ function StroopApp() {
           </div>
         )}
       </main>
-
-      <footer className="app-footer">
-        <p>
-          Stroop-тест &copy; {new Date().getFullYear()} • Разработано в рамках
-          учебного проекта •{' '}
-          <a
-            href="https://github.com/your-repo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Исходный код
-          </a>
-        </p>
-      </footer>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useStroop } from '../../context/StroopContext';
+import { generateStimuli } from '../../utils/stimulus';
 import { DIFFICULTY_CONFIGS } from '../../utils/constants';
-// import { formatTime } from '../../utils/helpers';
 import styles from './Results.module.css';
 
 export function Results() {
@@ -8,29 +8,26 @@ export function Results() {
   const { metrics, difficulty, elapsedTime, answers } = state;
 
   if (!metrics) {
-    return (
-      <div className={styles.container}>
-        <h2>Результаты теста</h2>
-        <p>Метрики не рассчитаны. Завершите тест для просмотра результатов.</p>
-      </div>
-    );
+    return <div className={styles.container}>Загрузка результатов...</div>;
   }
 
   const config = DIFFICULTY_CONFIGS[difficulty];
   const correct = answers.filter(a => a.isCorrect).length;
-  const incorrect = answers.filter(a => !a.isCorrect).length;
+  const incorrect = answers.length - correct;
 
+  // Повторяем тот же уровень (исправлено)
   const handleRestart = () => {
-    dispatch({ type: 'RESET_TEST' });
+    const stimuli = generateStimuli(difficulty);
+    dispatch({
+      type: 'INIT_TEST',
+      payload: { difficulty, stimuli },
+    });
   };
 
   const handleNewTest = () => {
     dispatch({ type: 'RESET_TEST' });
-    // После сброса пользователь должен выбрать уровень сложности
-    // (это произойдет автоматически, т.к. статус станет 'idle')
   };
 
-  // Форматирование секунд в MM:SS (как в таймере)
   const formatSeconds = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -50,8 +47,7 @@ export function Results() {
 
       <div className={styles.metricsGrid}>
         <div className={`${styles.metricCard} ${styles.accuracy}`}>
-          <div className={styles.metricIcon}>🎯</div>
-          <div className={styles.metricValue}>{metrics.accuracy}%</div>
+          <div className={styles.metricValue}>{Math.round(metrics.accuracy)}%</div>
           <div className={styles.metricLabel}>Точность</div>
           <div className={styles.metricSub}>
             {correct} верных, {incorrect} ошибок
@@ -59,10 +55,8 @@ export function Results() {
         </div>
 
         <div className={`${styles.metricCard} ${styles.reaction}`}>
-          <div className={styles.metricIcon}>⏱️</div>
-          <div className={styles.metricValue}>{formatSeconds(elapsedTime)}</div>
-          <div className={styles.metricLabel}>Затраченное время</div>
-          <div className={styles.metricSub}>Общая длительность теста</div>
+          <div className={styles.metricValue}>{Math.round(metrics.averageReactionTime)} мс</div>
+          <div className={styles.metricLabel}>Среднее время реакции</div>
         </div>
       </div>
 

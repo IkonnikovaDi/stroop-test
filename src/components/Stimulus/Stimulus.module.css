@@ -12,16 +12,12 @@
   font-size: 5rem;
   font-weight: 900;
   text-align: center;
-  margin: 0;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  user-select: none;
-  line-height: 1.2;
+  opacity: 1;  /* ← вместо 0 */
+  transform: scale(1);
+  transition: none;
 }
 
-.stimulus.visible {
+/* .stimulus.visible {
   opacity: 1;
   transform: scale(1);
 }
@@ -29,7 +25,7 @@
 .stimulus.fading {
   opacity: 0.3;
   transform: scale(0.95);
-}
+} */
 
 /* Адаптивность */
 @media (max-width: 768px) {

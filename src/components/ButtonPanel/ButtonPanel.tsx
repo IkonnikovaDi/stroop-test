@@ -45,6 +45,30 @@ export function ButtonPanel() {
     resetMeasurement();
   }, [currentStimulus?.id]);
 
+    useEffect(() => {
+    if (!currentStimulus || isProcessing) return;
+    const level = state.difficulty;
+    if (level === 'easy') return;
+
+    const timer = setTimeout(() => {
+      if (!isProcessing) {
+        dispatch({
+          type: 'RECORD_ANSWER',
+          payload: {
+            stimulusId: currentStimulus.id,
+            selectedColor: currentStimulus.color === 'red' ? 'blue' : 'red',
+            reactionTime: 3000,
+            timestamp: Date.now(),
+          },
+        });
+        setIsProcessing(true);
+        setTimeout(() => dispatch({ type: 'NEXT_STIMULUS' }), 500);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [currentStimulus, isProcessing]);
+
   if (!currentStimulus) {
     return (
       <div className={styles.container}>

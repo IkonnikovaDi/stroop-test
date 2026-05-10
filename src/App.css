@@ -5,14 +5,14 @@
   display: flex;
   flex-direction: column;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(90deg, #ffe0f4 0%, #ffd6e2 100%);
   color: #333;
 }
 
 .app-header {
   text-align: center;
   padding: 2rem 1rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(90deg,#ffe0f4 0%, #ffd6e2 100%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #ddd;
 }
@@ -33,8 +33,7 @@
 .app-main {
   flex: 1;
   padding: 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
+  margin: 0;
   width: 100%;
   box-sizing: border-box;
 }
@@ -65,7 +64,7 @@
 .app-footer {
   text-align: center;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(90deg, #f5f7fa 0%, #c3cfe2 100%);
   border-top: 1px solid #ddd;
   color: #7f8c8d;
   font-size: 0.9rem;
