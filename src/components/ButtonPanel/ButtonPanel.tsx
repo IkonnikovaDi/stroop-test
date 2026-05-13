@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useStroop } from '../../context/StroopContext';
-import { COLOR_NAMES, COLOR_HEX, DIFFICULTY_CONFIGS, MAX_REACTION_TIME, MIN_REACTION_TIME } from '../../utils/constants';
+import { COLOR_NAMES, COLOR_HEX, DIFFICULTY_CONFIGS, MAX_REACTION_TIME, MIN_REACTION_TIME, TIME_LIMIT_MS } from '../../utils/constants';
 import type { Color } from '../../types';
 import styles from './ButtonPanel.module.css';
 
@@ -31,18 +31,17 @@ export function ButtonPanel() {
     startTimeRef.current = null;
   };
 
-  // Запуск таймера при новом стимуле
+  // Сброс состояния и запуск измерения при новом стимуле
   useEffect(() => {
-    if (currentStimulus && !isProcessing) {
-      startMeasurement();
-    }
-  }, [currentStimulus?.id]);
-
-  // Сброс при смене стимула
-  useEffect(() => {
+    if (!currentStimulus) return;
+    
+    // Сброс UI состояния
     setSelectedColor(null);
     setIsProcessing(false);
+    
+    // Сброс измерения и запуск нового
     resetMeasurement();
+    startMeasurement();
   }, [currentStimulus?.id]);
 
     useEffect(() => {
@@ -52,19 +51,32 @@ export function ButtonPanel() {
 
     const timer = setTimeout(() => {
       if (!isProcessing) {
+        // Получаем время реакции через stopMeasurement
+        let reactionTime = stopMeasurement();
+        if (reactionTime === null) {
+          // Если измерение не запущено, используем лимит времени
+          reactionTime = TIME_LIMIT_MS;
+        }
+        // Ограничиваем время реакции разумными пределами
+        if (reactionTime < MIN_REACTION_TIME) {
+          reactionTime = MIN_REACTION_TIME;
+        } else if (reactionTime > MAX_REACTION_TIME) {
+          reactionTime = MAX_REACTION_TIME;
+        }
+        
         dispatch({
           type: 'RECORD_ANSWER',
           payload: {
             stimulusId: currentStimulus.id,
             selectedColor: currentStimulus.color === 'red' ? 'blue' : 'red',
-            reactionTime: 3000,
+            reactionTime,
             timestamp: Date.now(),
           },
         });
         setIsProcessing(true);
         setTimeout(() => dispatch({ type: 'NEXT_STIMULUS' }), 500);
       }
-    }, 3000);
+    }, TIME_LIMIT_MS);
 
     return () => clearTimeout(timer);
   }, [currentStimulus, isProcessing]);

@@ -161,7 +161,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s, transform 0.2s;;
   min-width: 220px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }

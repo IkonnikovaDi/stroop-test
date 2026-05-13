@@ -15,6 +15,7 @@
   opacity: 1;  /* ← вместо 0 */
   transform: scale(1);
   transition: none;
+  animation: fadeInScale 0.3s ease-out;
 }
 
 /* .stimulus.visible {

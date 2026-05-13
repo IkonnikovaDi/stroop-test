@@ -1,6 +1,7 @@
 import { useStroop } from '../../context/StroopContext';
 import { generateStimuli } from '../../utils/stimulus';
 import { DIFFICULTY_CONFIGS } from '../../utils/constants';
+import { saveResults } from '../../services/localStorageService';
 import styles from './Results.module.css';
 
 export function Results() {
@@ -12,10 +13,10 @@ export function Results() {
   }
 
   const config = DIFFICULTY_CONFIGS[difficulty];
-  const correct = answers.filter(a => a.isCorrect).length;
-  const incorrect = answers.length - correct;
+  // Используем данные из metrics, если они есть, иначе вычисляем из answers
+  const correct = metrics.correctAnswers ?? answers.filter(a => a.isCorrect).length;
+  const incorrect = metrics.incorrectAnswers ?? (answers.length - correct);
 
-  // Повторяем тот же уровень (исправлено)
   const handleRestart = () => {
     const stimuli = generateStimuli(difficulty);
     dispatch({
@@ -26,6 +27,19 @@ export function Results() {
 
   const handleNewTest = () => {
     dispatch({ type: 'RESET_TEST' });
+  };
+
+  const handleSave = () => {
+    const sessionData = {
+      timestamp: new Date().toISOString(),
+      difficulty: config.name,
+      accuracy: Math.round(metrics.accuracy),
+      avgReactionTime: Math.round(metrics.averageReactionTime),
+      correct,
+      incorrect,
+      totalTime: elapsedTime,
+    };
+    saveResults(sessionData);
   };
 
   const formatSeconds = (seconds: number) => {
@@ -66,6 +80,9 @@ export function Results() {
         </button>
         <button className={styles.actionButton} onClick={handleNewTest}>
           Новый тест
+        </button>
+        <button className={styles.actionButton} onClick={handleSave}>
+          💾 Сохранить результаты
         </button>
       </div>
     </div>
