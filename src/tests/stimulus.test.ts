@@ -1,6 +1,6 @@
-// src/utils/stimulus.test.ts
+// src/tests/stimulus.test.ts
 import { describe, test, expect } from 'vitest';
-import { generateStimuli } from './stimulus';
+import { generateStimuli } from '../utils/stimulus';
 import type { Color } from '../types';
 
 describe('generateStimuli', () => {

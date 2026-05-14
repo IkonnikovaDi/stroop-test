@@ -72,6 +72,15 @@ export function Results() {
           <div className={styles.metricValue}>{Math.round(metrics.averageReactionTime)} мс</div>
           <div className={styles.metricLabel}>Среднее время реакции</div>
         </div>
+
+        <div className={`${styles.metricCard} ${styles.interference}`}>
+          <div className={styles.metricValue}>{Math.round(metrics.interferenceIndex)} мс</div>
+          <div className={styles.metricLabel}>Индекс интерференции</div>
+          <div className={styles.metricSub}>
+            {metrics.interferenceIndex > 0 ? 'Замедление на ' : 'Ускорение на '}
+            {Math.abs(Math.round(metrics.interferenceIndex))} мс
+          </div>
+        </div>
       </div>
 
       <div className={styles.actions}>

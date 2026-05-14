@@ -1,6 +1,6 @@
-// src/utils/metrics.test.ts
+// src/tests/metrics.test.ts
 import { describe, test, expect } from 'vitest';
-import { calculateMetrics } from './metrics';
+import { calculateMetrics } from '../utils/metrics';
 import type { Answer, Stimulus } from '../types';
 
 describe('calculateMetrics', () => {
