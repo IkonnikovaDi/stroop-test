@@ -53,61 +53,80 @@
 
 ## Технологический стек
 
-- **Frontend**: React 18 с TypeScript
+- **Frontend**: React 19 с TypeScript
 - **Сборка**: Vite
-- **Стилизация**: CSS Modules / Tailwind CSS (опционально)
+- **Стилизация**: CSS Modules
 - **Тестирование**: Vitest + React Testing Library
-- **Хранение состояния**: Zustand (или React Context)
-- **Визуализация**: Recharts / D3 (для графиков)
-- **Деплой**: Vercel / Netlify
+- **Хранение состояния**: React Context + useReducer
+- **Линтинг**: ESLint + Prettier
+- **Деплой**: Vercel / Netlify (опционально)
 
 ## Структура проекта
 
 ```
 src/
-├── assets/          # Статические ресурсы (иконки, изображения)
-├── components/      # React-компоненты
-│   ├── Stimulus/   # Компонент отображения стимула
-│   ├── ButtonPanel/ # Панель кнопок выбора цвета
-│   ├── Timer/      # Таймер
-│   ├── Results/    # Экран результатов
-│   └── Stats/      # Блок статистики
-├── hooks/           # Пользовательские хуки
-│   ├── useStimulusGenerator.ts
-│   ├── useTimer.ts
-│   └── useMetrics.ts
-├── store/           # Состояние (Zustand)
-│   └── stroopStore.ts
-├── utils/           # Вспомогательные функции
-│   ├── stimulus.ts  # Генерация стимулов
-│   ├── metrics.ts   # Расчёт метрик
-│   └── constants.ts # Константы (цвета, слова)
-├── tests/           # Тесты
-│   ├── stimulus.test.ts
+├── assets/                 # Статические ресурсы (иконки, изображения)
+│   ├── hero.png
+│   ├── react.svg
+│   └── vite.svg
+├── components/             # React-компоненты
+│   ├── ButtonPanel/       # Панель кнопок выбора цвета
+│   │   ├── ButtonPanel.module.css
+│   │   └── ButtonPanel.tsx
+│   ├── DifficultySelector/ # Выбор уровня сложности
+│   │   ├── DifficultySelector.module.css
+│   │   └── DifficultySelector.tsx
+│   ├── Results/           # Экран результатов
+│   │   ├── Results.module.css
+│   │   └── Results.tsx
+│   ├── Stimulus/          # Компонент отображения стимула
+│   │   ├── Stimulus.module.css
+│   │   └── Stimulus.tsx
+│   └── Timer/             # Таймер
+│       ├── Timer.module.css
+│       └── Timer.tsx
+├── context/               # Контекст приложения
+│   └── StroopContext.tsx
+├── services/              # Сервисы (работа с localStorage)
+│   └── localStorageService.ts
+├── tests/                 # Тесты
 │   ├── metrics.test.ts
-│   └── components/
-└── App.tsx          # Корневой компонент
+│   ├── Results.test.tsx
+│   └── stimulus.test.ts
+├── types/                 # Типы TypeScript
+│   └── index.ts
+├── utils/                 # Вспомогательные функции
+│   ├── constants.ts       # Константы (цвета, слова, конфиги)
+│   ├── metrics.ts         # Расчёт метрик
+│   └── stimulus.ts        # Генерация стимулов
+├── App.css                # Глобальные стили
+├── App.tsx                # Корневой компонент
+├── index.css              # Базовые стили
+└── main.tsx               # Точка входа
 ```
 
 ## Логика работы
 
 ### Генерация стимулов
 
-Функция `generateStimulus()` создаёт объект стимула:
+Функция `generateStimuli(difficulty: Difficulty, count?: number)` создаёт массив стимулов для заданного уровня сложности:
 
 ```typescript
 interface Stimulus {
-  word: string;           // Текстовое значение ("КРАСНЫЙ")
-  color: string;          // Цвет шрифта (CSS color)
-  isCongruent: boolean;   // Конгруэнтность
+  id: string;            // Уникальный идентификатор
+  word: Word;            // Текстовое значение (например, 'red', 'green')
+  color: Color;          // Цвет шрифта (например, 'blue', 'yellow')
+  congruent: boolean;    // Конгруэнтность (совпадает ли слово с цветом)
+  timestamp: number;     // Время показа
 }
 ```
 
 Алгоритм:
-1. Выбирает случайное слово из набора цветов.
-2. Выбирает случайный цвет из того же набора.
-3. Определяет конгруэнтность (word === color).
-4. При необходимости регулирует вероятность конгруэнтных/неконгруэнтных в зависимости от уровня сложности.
+1. На основе выбранного уровня сложности определяются доступные цвета и соотношение конгруэнтных/неконгруэнтных стимулов.
+2. Для каждого стимула случайно выбирается слово и цвет из набора цветов.
+3. Конгруэнтность определяется сравнением слова и цвета.
+4. Вероятность конгруэнтных стимулов регулируется в соответствии с уровнем сложности (лёгкий: 50%, средний: 50%, сложный: 0%).
+5. Генерируется массив из 30 стимулов (по умолчанию).
 
 ### Управление сессией
 
@@ -115,14 +134,15 @@ interface Stimulus {
 2. **Цикл стимулов**:
    - Показывается стимул, запускается таймер реакции.
    - Пользователь нажимает кнопку цвета.
-   - Фиксируется время реакции и правильность.
-   - Стимул удаляется, через короткую паузу (например, 500 мс) показывается следующий.
-3. **Завершение**: после 30 стимулов (или по истечении времени) сессия останавливается, вычисляются метрики.
+   - Фиксируется время реакции и правильность ответа.
+   - Стимул удаляется, через короткую паузу (500 мс) показывается следующий.
+3. **Завершение**: после 30 стимулов сессия останавливается, вычисляются метрики.
 
 ### Расчёт метрик
 
 - **Среднее время реакции (СВР)**: сумма времени правильных ответов / количество правильных.
 - **Количество ошибок**: стимулы, на которые дан неправильный ответ.
+- **Точность**: процент правильных ответов от общего числа стимулов.
 - **Индекс интерференции**: `СВР_неконгруэнтные - СВР_конгруэнтные`.
 
 ## Тестирование
@@ -136,12 +156,13 @@ interface Stimulus {
 Пример теста:
 
 ```typescript
-import { generateStimulus } from '../utils/stimulus';
+import { generateStimuli } from '../utils/stimulus';
 
 describe('stimulus generator', () => {
-  it('should create congruent stimulus when word and color match', () => {
-    const stimulus = generateStimulus('КРАСНЫЙ', 'КРАСНЫЙ');
-    expect(stimulus.isCongruent).toBe(true);
+  it('should generate 30 stimuli for easy difficulty', () => {
+    const stimuli = generateStimuli('easy');
+    expect(stimuli).toHaveLength(30);
+    expect(stimuli.every(s => s.word && s.color)).toBe(true);
   });
 });
 ```
