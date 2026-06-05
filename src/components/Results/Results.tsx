@@ -17,7 +17,7 @@ export function Results() {
   const correct = metrics.correctAnswers ?? answers.filter(a => a.isCorrect).length;
   const incorrect = metrics.incorrectAnswers ?? (answers.length - correct);
 
-  const handleRestart = () => {
+  const handleRestart = () => {   /* новый набор стимулов */
     const stimuli = generateStimuli(difficulty);
     dispatch({
       type: 'INIT_TEST',

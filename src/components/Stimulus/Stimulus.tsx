@@ -27,7 +27,7 @@ export function Stimulus({
       setIsVisible(true);
     }, 50);
 
-    // Анимация исчезновения (если нужно)
+    // Анимация исчезновения
     if (displayTime > 0) {
       const fadeTimer = setTimeout(() => {
         setIsFading(true);

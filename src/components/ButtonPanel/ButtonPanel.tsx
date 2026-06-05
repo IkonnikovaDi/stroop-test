@@ -7,7 +7,9 @@ import styles from './ButtonPanel.module.css';
 export function ButtonPanel() {
   const { state, dispatch } = useStroop();
   const startTimeRef = useRef<number | null>(null);
+  // какую кнопку нажал пользователь 
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
+  // для блокировки повторных ответов, во время обработки текущего
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Доступные цвета из конфига (а не хардкод)

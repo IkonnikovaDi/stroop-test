@@ -37,6 +37,7 @@ export interface Metrics {
 
 export type TestStatus = 'idle' | 'running' | 'paused' | 'completed';
 
+// текущее состояние теста
 export interface StroopState {
   status: TestStatus;
   difficulty: Difficulty;
